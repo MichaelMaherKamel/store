@@ -2,6 +2,9 @@ import express, { request } from 'express'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import errormiddleware from './middleware/error.middleware'
+
+
 const port = 3000
 
 // Create instance from server
@@ -27,6 +30,7 @@ app.use(rateLimit({
 
 // Add route for the / path + defining HTTP verb = get
 app.get('/', (req,res) => {
+    throw new Error('Error Exist')
     res.send("Wla wla wla el so7ab yalla 🔥")
 })
 
@@ -38,6 +42,16 @@ app.post('/', (req,res) => {
         {
             message: 'Hello World from Post',
             data: req.body
+        }
+    )
+})
+
+app.use(errormiddleware)
+
+app.use((req, res) => {
+    res.status(404).json(
+        {
+            message: "You are lost bro, please check somewhere else"
         }
     )
 })
