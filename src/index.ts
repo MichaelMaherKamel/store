@@ -3,9 +3,12 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import errormiddleware from './middleware/error.middleware'
+import config from './config'
+import db from './databases'
+import { Client } from 'pg'
 
 
-const port = 3000
+const port = config.port || 3000
 
 // Create instance from server
 const app = express()
@@ -45,6 +48,18 @@ app.post('/', (req,res) => {
         }
     )
 })
+
+//test db
+
+db.connect().then((Client) => {
+    return Client.query('SELECT NOW()').then((res) => {
+        Client.release();
+        console.log(res.rows)
+    }).catch(err => {
+        Client.release();
+        console.log(err.stack);
+    })
+});
 
 app.use(errormiddleware)
 
